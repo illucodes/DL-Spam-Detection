@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spam Email &amp; Message Detection using Deep Learning</title>
+<style>
+:root{
+  --bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--mut:#64748b;--acc:#2563eb;
+  --acc-hover:#1d4ed8;--acc2:#eff6ff;--bd:#e2e8f0;--bad:#ef4444;
+  --bad-bg:#fef2f2;--bad-border:#fecaca;--good:#10b981;--good-bg:#ecfdf5;
+  --good-border:#a7f3d0;box-sizing:border-box;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#090d16;--card:#111827;--ink:#f1f5f9;--mut:#94a3b8;--acc:#3b82f6;
+    --acc-hover:#60a5fa;--acc2:#1e293b;--bd:#1f2937;--bad:#f87171;
+    --bad-bg:#450a0a;--bad-border:#7f1d1d;--good:#34d399;--good-bg:#064e3b;
+    --good-border:#065f46;
+  }
+}
+html{scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,sans-serif}
+nav{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--bd);display:flex;gap:18px;padding:14px 24px;overflow-x:auto;white-space:nowrap;font:600 14px system-ui,sans-serif;z-index:50}
+nav a{color:var(--mut);text-decoration:none;transition:color .2s}nav a:hover{color:var(--acc)}
+header{padding:60px 20px 44px;text-align:center;background:linear-gradient(180deg,var(--acc2),var(--bg));border-bottom:1px solid var(--bd)}
+header h1{font-size:clamp(1.75rem,4vw,2.5rem);line-height:1.25;margin:0 auto 12px;max-width:850px}
+header p{color:var(--mut);max-width:680px;margin:0 auto 8px}
+.tag{display:inline-block;background:var(--acc);color:#fff;border-radius:99px;padding:4px 14px;font:600 12px system-ui,sans-serif;margin-bottom:16px}
+main{max-width:960px;margin:0 auto;padding:0 20px 80px}
+section{padding-top:52px}
+h2{font-size:1.6rem;margin:0 0 6px}
+h2+p.sub{color:var(--mut);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px 24px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
+.step{background:var(--acc2);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:center;font:600 13px system-ui,sans-serif;flex:1 1 120px;max-width:160px}
+.step small{display:block;font-weight:400;color:var(--mut);margin-top:3px;font-size:11.5px}
+.arrow{color:var(--acc);font-size:18px}
+textarea{width:100%;min-height:130px;border:1px solid var(--bd);border-radius:10px;padding:14px;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif;resize:vertical}
+textarea:focus{outline:0;border-color:var(--acc)}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:600 14px system-ui,sans-serif;cursor:pointer;transition:background .2s}
+button:hover{background:var(--acc-hover)}
+button.alt{background:var(--acc2);color:var(--acc);border:1px solid var(--bd)}
+button:disabled{opacity:0.6;cursor:not-allowed}
+#res{margin-top:20px;display:none}
+.res-box{padding:18px 20px;border-radius:12px;border:1px solid transparent}
+.res-box.spam{background:var(--bad-bg);border-color:var(--bad-border);color:var(--bad)}
+.res-box.ham{background:var(--good-bg);border-color:var(--good-border);color:var(--good)}
+.res-title{display:flex;align-items:center;justify-content:space-between;font-size:1.2rem;font-weight:700}
+.bar{height:10px;border-radius:99px;background:var(--bd);overflow:hidden;margin:12px 0}
+.bar i{display:block;height:100%;width:0;transition:width .4s ease,background-color .4s ease}
+.features{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--card);color:var(--ink);border:1px solid var(--bd)}
+.note{font-size:13px;color:var(--mut);margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px}
+th,td{border:1px solid var(--bd);padding:10px 14px;text-align:left}
+th{background:var(--acc2);font-weight:600}
+footer{border-top:1px solid var(--bd);padding:32px 20px;text-align:center;color:var(--mut);font-size:13.5px;margin-top:60px}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#about">About</a>
+  <a href="#how">How it works</a>
+  <a href="#demo">Try it</a>
+  <a href="#results">Results</a>
+  <a href="#lit">Research</a>
+  <a href="#refs">References</a>
+</nav>
+
+<header>
+  <span class="tag">Deep Learning Research Project</span>
+  <h1>Spam Email &amp; Message Detection using Deep Learning</h1>
+  <p>How an LSTM recurrent neural network processes sequential context to isolate spam with high precision.</p>
+  <p style="font-size:0.92rem;margin-top:10px;">By Mohammed Ilyas &middot; 24BCA1337 &middot; III BCA &middot; Yenepoya Institute of Arts, Science, Commerce and Management, Mangaluru</p>
+</header>
+
+<main>
+  <section id="about">
+    <h2>About the Project</h2>
+    <p class="sub">The problem and why it matters</p>
+    <div class="card">
+      <p>Email and SMS are prime targets for phishing links, financial scams, and malware distribution[cite: 1]. Conventional keyword matching and Naive Bayes bag-of-words fail when adversaries permute phrasing[cite: 1].</p>
+      <p>Deep sequence models like Recurrent Neural Networks (RNNs) and Long Short-Term Memory (LSTM) preserve word ordering, syntax, and long-range dependencies, delivering resilient classification[cite: 1].</p>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2>How the Model Works</h2>
+    <p class="sub">From raw text to tensor predictions</p>
+    <div class="flow">
+      <div class="step">Input<small>Raw Message Text</small></div><div class="arrow">&rarr;</div>
+      <div class="step">Preprocessing<small>Lowercase, entity tokens</small></div><div class="arrow">&rarr;</div>
+      <div class="step">Embedding (16)<small>Index &rarr; Dense vector</small></div><div class="arrow">&rarr;</div>
+      <div class="step">LSTM (32)<small>Cell &amp; Gate states</small></div><div class="arrow">&rarr;</div>
+      <div class="step">Dense + Sigmoid<small>Probability output</small></div><div class="arrow">&rarr;</div>
+      <div class="step">Classification<small>Spam vs Ham</small></div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <h2>Try the Trained Model</h2>
+    <p class="sub">Running directly against the live TensorFlow/Keras LSTM backend</p>
+    <div class="card">
+      <textarea id="msg" placeholder="Type or paste any SMS / message here..."></textarea>
+      
+      <div class="btn-group">
+        <button id="btnCheck" onclick="check()">Check message</button>
+        <button class="alt" onclick="setExample(0)">Spam example</button>
+        <button class="alt" onclick="setExample(1)">Phishing example</button>
+        <button class="alt" onclick="setExample(2)">Normal SMS</button>
+        <button class="alt" onclick="setExample(3)">Normal Email</button>
+      </div>
+
+      <div id="res"></div>
+
+      <p class="note">This interface sends the message to the local Flask backend running the trained 54,817-parameter Keras LSTM model[cite: 1].</p>
+    </div>
+  </section>
+
+  <section id="results">
+    <h2>Experimental Results</h2>
+    <p class="sub">Evaluated on held-out test splits</p>
+    <div class="grid">
+      <div class="card"><h3>Accuracy</h3><p style="font-size:1.8rem;font-weight:700;margin:0">99.28%</p></div>
+      <div class="card"><h3>Precision</h3><p style="font-size:1.8rem;font-weight:700;margin:0">98.63%</p></div>
+      <div class="card"><h3>Recall</h3><p style="font-size:1.8rem;font-weight:700;margin:0">96.00%</p></div>
+      <div class="card"><h3>F1-score</h3><p style="font-size:1.8rem;font-weight:700;margin:0">97.30%</p></div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Model</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>False Positives</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>LSTM (Deep Learning)</strong></td><td>99.28%</td><td>98.63%</td><td>96.00%</td><td>97.30%</td><td>1 of 483</td></tr>
+        <tr><td>TF-IDF + Naive Bayes (Baseline)</td><td>96.24%</td><td>100.00%</td><td>72.00%</td><td>83.72%</td><td>0 of 483</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="lit">
+    <h2>Research Reviewed</h2>
+    <p class="sub">Literature cited in research report</p>
+    <div class="card">
+      <ul>
+        <li><strong>Debnath &amp; Kar (IEEE, 2022):</strong> BERT (99.14%) and BiLSTM (98.34%) compared on Enron corpora[cite: 1].</li>
+        <li><strong>Nasreen et al. (Egyptian Informatics Journal, 2024):</strong> GWO feature selection paired with transformer representations reached 99.14%[cite: 1].</li>
+        <li><strong>Uddin et al. (arXiv, 2024):</strong> Explainable AI frameworks applied to deep learning phishing detection[cite: 1].</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="refs">
+    <h2>References</h2>
+    <p class="sub">Verified citations</p>
+    <p class="note" style="margin-top:0">All ten literature references from the research paper are maintained in the report catalog[cite: 1].</p>
+  </section>
+</main>
+
+<footer>
+  Mohammed Ilyas (24BCA1337) &middot; Submitted to Ms. Divya &middot; Department of Computer Science &middot; 2026&ndash;2027
+</footer>
+
+<script>
+const SAMPLES = [
+  "WINNER!! As a valued network customer you have been selected to receive a £900 prize reward! To claim call 09061701461. Claim code KL341. Valid 12 hours only.",
+  "URGENT: Unauthorized login attempt detected on your bank account. Verify your identity immediately at http://secure-banking-alert.com or your access will be suspended.",
+  "Hey, are you coming to the college library today? We need to submit the computer science lab records before 3 PM.",
+  "Dear Mohammed, please find attached the reviewed draft of the seminar report. Let me know once you make the suggested changes. Regards."
+];
+
+function setExample(idx) {
+  document.getElementById("msg").value = SAMPLES[idx];
+  check();
+}
+
+async function check() {
+  const text = document.getElementById("msg").value.trim();
+  const resDiv = document.getElementById("res");
+  const btn = document.getElementById("btnCheck");
+
+  if (!text) {
+    resDiv.style.display = "block";
+    resDiv.innerHTML = '<div class="res-box" style="background:var(--acc2);border-color:var(--bd);color:var(--ink);">Please enter some text to classify.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Analyzing tensor...";
+
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    const isSpam = data.is_spam;
+    const spamPct = (data.probability * 100).toFixed(2);
+    const boxClass = isSpam ? "spam" : "ham";
+    const barColor = isSpam ? "var(--bad)" : "var(--good)";
+
+    let tokensHtml = (data.recognized_tokens || [])
+      .map(t => `<span class="chip">${t}</span>`)
+      .join("");
+
+    resDiv.style.display = "block";
+    resDiv.innerHTML = `
+      <div class="res-box ${boxClass}">
+        <div class="res-title">
+          <span>${data.label}</span>
+          <span>${spamPct}% Spam Probability</span>
+        </div>
+        <div class="bar"><i style="width:${spamPct}%;background:${barColor}"></i></div>
+        <div style="font-size:13px;font-weight:600;margin-top:10px;">Embedded Tokens Extracted by LSTM:</div>
+        <div class="features">${tokensHtml || '<span class="chip">Out of vocabulary tokens</span>'}</div>
+      </div>
+    `;
+  } catch (err) {
+    resDiv.style.display = "block";
+    resDiv.innerHTML = `<div class="res-box" style="background:var(--bad-bg);border-color:var(--bad-border);color:var(--bad);">Error connecting to backend: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerText = "Check message";
+  }
+}
+</script>
+</body>
+</html>
